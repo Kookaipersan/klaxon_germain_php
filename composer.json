@@ -1,0 +1,19 @@
+{
+    "name": "willi/klaxon_germain_php",
+    "description": "Application de covoiturage",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Willi\\KlaxonGermainPhp\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Kookaipersan",
+            "email": "kookaipersan@gmail.com"
+        }
+    ],
+    "require": {
+        "izniburak/router": "^3.1"
+    }
+}
