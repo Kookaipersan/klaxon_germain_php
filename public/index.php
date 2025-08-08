@@ -17,5 +17,13 @@ $router = new Router([
     ]);
 
     $router->get('/', 'HomeController@index');
+    
+    $router->get('/trajet/create', 'TrajetController@createForm');
+    $router->post('/trajet/create', 'TrajetController@createAction');
+
+    $router->get('/trajet/edit/{id}', 'TrajetController@editForm');
+    $router->post('/trajet/edit/{id}', 'TrajetController@editAction');
+
+    $router->post('/trajet/delete/{id}', 'TrajetController@deleteAction');
 
     $router->run();
