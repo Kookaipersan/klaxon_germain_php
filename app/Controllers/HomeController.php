@@ -2,16 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Core\Database;
+use App\Models\Trajet;
 
 class HomeController
 {
     public function index()
     {
-        $pdo = Database::getInstance();
-
-        $stmt = $pdo->query("SELECT * FROM trajets");
-        $trajets = $stmt->fetchAll();
+        $trajets = Trajet::getTrajetsDisponibles();
 
         require __DIR__ . '/../Views/home.php';
     }
