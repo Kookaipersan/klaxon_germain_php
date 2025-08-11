@@ -32,3 +32,29 @@ $user     = $isLogged ? $_SESSION['user'] : null;
     <?php endif; ?>
   </div>
 </header>
+
+<?php
+// ----- BLOC FLASH GLOBAL (apparaît sous le header) -----
+$flash = null;
+
+// 1) si tu as la classe Helpers avec flashGet()
+if (class_exists('\\App\\Core\\Helpers')) {
+    $flash = \App\Core\Helpers::flashGet();
+}
+
+// 2) fallback si tu utilises encore $_SESSION['flash'] directement
+if (!$flash && !empty($_SESSION['flash'])) {
+    $flash = $_SESSION['flash'];
+    unset($_SESSION['flash']);
+}
+
+if ($flash):
+    $type = htmlspecialchars($flash['type'] ?? 'success');
+    $msg  = htmlspecialchars($flash['msg']  ?? '');
+?>
+  <div class="container">
+    <div class="alert alert-<?= $type ?> text-center mb-4">
+      <?= $msg ?>
+    </div>
+  </div>
+<?php endif; ?>

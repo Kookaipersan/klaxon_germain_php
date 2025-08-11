@@ -1,115 +1,99 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-$base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-$isLogged = isset($_SESSION['user']);
-$userId   = $isLogged ? (int)$_SESSION['user']['id'] : null;
+// On inclut le header commun
+include __DIR__ . '/layout/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Accueil - Touche pas au Klaxon</title>
-  <link rel="stylesheet" href="<?= $base ?>/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <script src="<?= $base ?>/js/bootstrap.bundle.min.js"></script>
-</head>
-<body class="bg-light">
-
-<?php include __DIR__ . '/layout/header.php'; ?>
 
 <div class="container">
 
-  <?php if (!empty($_SESSION['flash'])): ?>
-    <div class="alert alert-success text-center"><?= htmlspecialchars($_SESSION['flash']) ?></div>
-    <?php unset($_SESSION['flash']); ?>
-  <?php endif; ?>
+    <?php if ($f = \App\Core\Helpers::flashGet()): ?>
+        <div class="alert alert-<?= htmlspecialchars($f['type']) ?> text-center">
+            <?= htmlspecialchars($f['msg']) ?>
+        </div>
+    <?php endif; ?>
 
-  <h2 class="h5 mb-3">Trajets proposés</h2>
+    <h2 class="mb-4">Liste des trajets disponibles</h2>
 
-  <?php if (empty($trajets)) : ?>
-    <div class="alert alert-info text-center">Aucun trajet disponible pour le moment.</div>
-  <?php else : ?>
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle text-center">
-        <thead class="table-dark">
-          <tr>
-            <th>Départ</th>
-            <th>Date</th>
-            <th>Heure</th>
-            <th>Destination</th>
-            <th>Date</th>
-            <th>Heure</th>
-            <th>Places</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($trajets as $t) : ?>
-          <?php
-            // Adapte aux noms de colonnes que tu utilises déjà :
-            // ville_depart, ville_arrivee, date_depart, date_arrivee, places_disponibles, id_utilisateur
-            $id             = (int)$t['id'];
-            $isOwner        = $isLogged && $userId === (int)$t['id_utilisateur'];
-            $modalId        = 'modalTrajet'.$id;
-            $viewBtnAttrs   = 'data-bs-toggle="modal" data-bs-target="#'.$modalId.'"';
-            $editHref       = $isLogged && $isOwner ? "$base/trajet/edit/$id"   : "$base/login";
-            $deleteAction   = $isLogged && $isOwner ? "$base/trajet/delete/$id" : "$base/login";
-          ?>
-          <tr>
-            <td><?= htmlspecialchars($t['ville_depart']) ?></td>
-            <td><?= date('d/m/Y', strtotime($t['date_depart'])) ?></td>
-            <td><?= date('H:i',     strtotime($t['date_depart'])) ?></td>
-            <td><?= htmlspecialchars($t['ville_arrivee']) ?></td>
-            <td><?= date('d/m/Y', strtotime($t['date_arrivee'])) ?></td>
-            <td><?= date('H:i',     strtotime($t['date_arrivee'])) ?></td>
-            <td><?= (int)$t['places_disponibles'] ?></td>
-            <td class="text-nowrap">
-              <!-- ŒIL : ouvre la modale -->
-              <button type="button" class="btn btn-sm btn-outline-secondary" <?= $viewBtnAttrs ?> title="Voir">
-                <i class="bi bi-eye"></i>
-              </button>
+    <?php if (empty($trajets)): ?>
+        <p class="text-muted text-center">Aucun trajet disponible pour le moment.</p>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Départ</th>
+                        <th>Arrivée</th>
+                        <th>Date départ</th>
+                        <th>Date arrivée</th>
+                        <th>Places totales</th>
+                        <th>Places dispo</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($trajets as $t): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($t['id']) ?></td>
+                            <td><?= htmlspecialchars($t['depart']) ?></td>
+                            <td><?= htmlspecialchars($t['arrivee']) ?></td>
+                            <td><?= htmlspecialchars($t['date_heure_depart']) ?></td>
+                            <td><?= htmlspecialchars($t['date_heure_arrivee']) ?></td>
+                            <td><?= htmlspecialchars($t['nombres_places_total']) ?></td>
+                            <td><?= htmlspecialchars($t['nombres_places_dispo']) ?></td>
+                            <td>
+                                <!-- Bouton œil (modal) -->
+                                <button class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                        data-bs-target="#modalTrajet<?= $t['id'] ?>">
+                                    👁
+                                </button>
 
-              <!-- CRAYON -->
-              <?php if ($isLogged && $isOwner): ?>
-                <a class="btn btn-sm btn-outline-warning" href="<?= $editHref ?>" title="Modifier">
-                  <i class="bi bi-pencil-square"></i>
-                </a>
-              <?php else: ?>
-                <a class="btn btn-sm btn-outline-secondary" href="<?= $editHref ?>" title="Connexion requise">
-                  <i class="bi bi-pencil-square"></i>
-                </a>
-              <?php endif; ?>
+                                <!-- Bouton édition -->
+                                <a href="<?= $base ?>/trajet/edit/<?= $t['id'] ?>" class="btn btn-sm btn-warning">
+                                    ✏
+                                </a>
 
-              <!-- POUBELLE -->
-              <?php if ($isLogged && $isOwner): ?>
-                <form method="post" action="<?= $deleteAction ?>" style="display:inline;"
-                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce trajet ?');">
-                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </form>
-              <?php else: ?>
-                <a class="btn btn-sm btn-outline-danger" href="<?= $deleteAction ?>" title="Connexion requise">
-                  <i class="bi bi-trash"></i>
-                </a>
-              <?php endif; ?>
-            </td>
-          </tr>
+                                <!-- Form suppression -->
+                                <form action="<?= $base ?>/trajet/delete/<?= $t['id'] ?>" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Supprimer ce trajet ?');">
+                                        🗑
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
 
-          <!-- MODALE -->
-          <?php $modalTrajet = $t; include __DIR__ . '/partials/modal-trajet.php'; ?>
+                        <!-- Modal détails trajet -->
+                        <div class="modal fade" id="modalTrajet<?= $t['id'] ?>" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Détails du trajet #<?= $t['id'] ?></h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Départ :</strong> <?= htmlspecialchars($t['depart']) ?></p>
+                                        <p><strong>Arrivée :</strong> <?= htmlspecialchars($t['arrivee']) ?></p>
+                                        <p><strong>Date départ :</strong> <?= htmlspecialchars($t['date_heure_depart']) ?></p>
+                                        <p><strong>Date arrivée :</strong> <?= htmlspecialchars($t['date_heure_arrivee']) ?></p>
+                                        <p><strong>Places totales :</strong> <?= htmlspecialchars($t['nombres_places_total']) ?></p>
+                                        <p><strong>Places dispo :</strong> <?= htmlspecialchars($t['nombres_places_dispo']) ?></p>
+                                        <?php if (!empty($t['auteur'])): ?>
+                                            <p><strong>Auteur :</strong> <?= htmlspecialchars($t['auteur']) ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
-  <?php endif; ?>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 
-  <?php if (!$isLogged): ?>
-    <div class="alert alert-info text-center mt-3">
-      Pour obtenir plus d'informations sur le trajet, veuillez vous connecter.
-    </div>
-  <?php endif; ?>
 </div>
-</body>
-</html>
+
+<?php
+// On inclut le footer commun
+include __DIR__ . '/layout/footer.php';
+?>
