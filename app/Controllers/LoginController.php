@@ -24,7 +24,7 @@ class LoginController
             'est_admin' => !empty($_POST['is_admin']) ? 1 : 0,
         ];
 
-        Helpers::flashSet('Connexion réussie', 'success');
+        \App\Core\Helpers::flashSet('success', 'Connexion réussie');
         header('Location: ' . Helpers::basePath() . '/'); exit;
     }
 

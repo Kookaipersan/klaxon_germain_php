@@ -1,8 +1,19 @@
-<?php use App\Core\Helpers; $base = Helpers::basePath(); ?>
-<div class="container">
-  <h2 class="h5 mb-3">Créer un trajet</h2>
-  <form method="post" action="<?= $base ?>/trajet/create" class="row g-3">
+<?php
+use App\Core\Helpers;
+$base = Helpers::basePath();
+include __DIR__ . '/../layout/header.php';
+?>
 
+<div class="container" style="max-width: 920px;">
+  <?php if ($f = \App\Core\Helpers::flashGet()): ?>
+    <div class="alert alert-<?= htmlspecialchars($f['type']) ?> text-center">
+      <?= htmlspecialchars($f['msg']) ?>
+    </div>
+  <?php endif; ?>
+
+  <h2 class="h5 mb-4">Créer un trajet</h2>
+
+  <form method="post" action="<?= $base ?>/trajet/create" class="row g-3">
     <div class="col-md-6">
       <label class="form-label">Agence de départ</label>
       <select name="agence_depart_id" class="form-select" required>
@@ -35,17 +46,19 @@
 
     <div class="col-md-6">
       <label class="form-label">Places totales</label>
-      <input type="number" name="nb_places_total" min="1" class="form-control" required>
+      <input type="number" name="nombres_places_total" min="1" class="form-control" required>
     </div>
 
     <div class="col-md-6">
       <label class="form-label">Places disponibles</label>
-      <input type="number" name="nb_places_dispo" min="0" class="form-control" required>
+      <input type="number" name="nombres_places_dispo" min="0" class="form-control" required>
     </div>
 
     <div class="col-12">
       <button class="btn btn-success">Enregistrer</button>
-      <a href="<?= $base ?>/" class="btn btn-secondary">Annuler</a>
+      <a href="<?= $base ?>/" class="btn btn-secondary">Retour</a>
     </div>
   </form>
 </div>
+
+<?php include __DIR__ . '/../layout/footer.php'; ?>

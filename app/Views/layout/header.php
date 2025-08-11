@@ -5,6 +5,18 @@ $isLogged = isset($_SESSION['user']);
 $isAdmin  = $isLogged && (!empty($_SESSION['user']['est_admin']));
 $user     = $isLogged ? $_SESSION['user'] : null;
 ?>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Touche pas au Klaxon</title>
+  <!-- Bootstrap CSS + Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
 <header class="bg-white border rounded-3 p-3 mb-4">
   <div class="container d-flex justify-content-between align-items-center flex-wrap">
     <a href="<?= $base ?>/" class="text-decoration-none">
@@ -34,27 +46,15 @@ $user     = $isLogged ? $_SESSION['user'] : null;
 </header>
 
 <?php
-// ----- BLOC FLASH GLOBAL (apparaît sous le header) -----
+// ----- FLASH sous le header -----
 $flash = null;
-
-// 1) si tu as la classe Helpers avec flashGet()
-if (class_exists('\\App\\Core\\Helpers')) {
-    $flash = \App\Core\Helpers::flashGet();
-}
-
-// 2) fallback si tu utilises encore $_SESSION['flash'] directement
-if (!$flash && !empty($_SESSION['flash'])) {
-    $flash = $_SESSION['flash'];
-    unset($_SESSION['flash']);
-}
-
+if (class_exists('\\App\\Core\\Helpers')) $flash = \App\Core\Helpers::flashGet();
+if (!$flash && !empty($_SESSION['flash'])) { $flash = $_SESSION['flash']; unset($_SESSION['flash']); }
 if ($flash):
-    $type = htmlspecialchars($flash['type'] ?? 'success');
-    $msg  = htmlspecialchars($flash['msg']  ?? '');
+  $type = htmlspecialchars($flash['type'] ?? 'success');
+  $msg  = htmlspecialchars($flash['msg']  ?? '');
 ?>
   <div class="container">
-    <div class="alert alert-<?= $type ?> text-center mb-4">
-      <?= $msg ?>
-    </div>
+    <div class="alert alert-<?= $type ?> text-center mb-4"><?= $msg ?></div>
   </div>
 <?php endif; ?>

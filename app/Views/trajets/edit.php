@@ -1,4 +1,7 @@
-<?php use App\Core\Helpers; $base = Helpers::basePath(); ?>
+<?php 
+use App\Core\Helpers; $base = Helpers::basePath(); ?>
+<?php include __DIR__ . '/../layout/header.php'; ?>
+
 <div class="container">
   <h2 class="h5 mb-3">Modifier le trajet #<?= (int)$trajet['id'] ?></h2>
   <form method="post" action="<?= $base ?>/trajet/edit/<?= (int)$trajet['id'] ?>" class="row g-3">
@@ -59,3 +62,4 @@
     </div>
   </form>
 </div>
+<?php include __DIR__ . '/../layout/footer.php'; ?>
