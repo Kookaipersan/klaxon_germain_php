@@ -8,30 +8,27 @@
 </head>
 <body class="p-4">
   <div class="container" style="max-width:520px;">
-    <h1 class="h4 mb-3">Connexion (temporaire)</h1>
+    <h1 class="h4 mb-3">Connexion</h1>
+
+    <?php if ($f = \App\Core\Helpers::flashGet()): ?>
+      <div class="alert alert-<?= htmlspecialchars($f['type']) ?> text-center">
+        <?= htmlspecialchars($f['msg']) ?>
+      </div>
+    <?php endif; ?>
+
     <form method="post" action="<?= $base ?>/login" class="vstack gap-3">
-      <div>
-        <label class="form-label">ID utilisateur (auteur)</label>
-        <input class="form-control" type="number" name="user_id" value="1">
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <label class="form-label">Prénom</label>
-          <input class="form-control" type="text" name="prenom" value="Jean">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Nom</label>
-          <input class="form-control" type="text" name="nom" value="Dupont">
-        </div>
-      </div>
+      <?= \App\Core\Helpers::csrfField() ?>
+
       <div>
         <label class="form-label">Email</label>
-        <input class="form-control" type="email" name="email" value="jean.dupont@exemple.com">
+        <input class="form-control" type="email" name="email" required autofocus>
       </div>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin">
-        <label class="form-check-label" for="is_admin">Se connecter en admin</label>
+
+      <div>
+        <label class="form-label">Mot de passe</label>
+        <input class="form-control" type="password" name="password" required>
       </div>
+
       <div class="d-flex gap-2">
         <button class="btn btn-primary">Se connecter</button>
         <a class="btn btn-secondary" href="<?= $base ?>/">Annuler</a>

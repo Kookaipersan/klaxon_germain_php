@@ -99,6 +99,10 @@ class TrajetController
             Helpers::flash('Connexion requise', 'warning');
             header('Location: ' . Helpers::basePath() . '/login'); exit;
         }
+         if (!\App\Core\Helpers::csrfVerify()) {
+        \App\Core\Helpers::flash('Session expirée. Merci de réessayer.', 'danger');
+        header('Location: ' . \App\Core\Helpers::basePath() . '/'); exit;
+    }
 
         // Inputs + normalisation
         $ad  = (int)($_POST['agence_depart_id']  ?? 0);
@@ -225,6 +229,10 @@ class TrajetController
             Helpers::flash('Connexion requise', 'warning');
             header('Location: ' . Helpers::basePath() . '/login'); exit;
         }
+        if (!\App\Core\Helpers::csrfVerify()) {
+        \App\Core\Helpers::flash('Session expirée. Merci de réessayer.', 'danger');
+        header('Location: ' . \App\Core\Helpers::basePath() . '/'); exit;
+    }
 
         $id = (int)$id;
         $trajet = Trajet::findById($id);

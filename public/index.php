@@ -1,4 +1,15 @@
 <?php
+
+session_set_cookie_params([
+  'lifetime' => 0,
+  'path' => '/',
+  'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+  'httponly' => true,
+  'samesite' => 'Lax',
+]);
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
+
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 // masque les Deprecated/Notice/Warning pour voir l'erreur utile

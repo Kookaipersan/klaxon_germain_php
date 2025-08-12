@@ -14,6 +14,7 @@ include __DIR__ . '/../layout/header.php';
   <h2 class="h5 mb-4">Créer un trajet</h2>
 
   <form method="post" action="<?= $base ?>/trajet/create" class="row g-3">
+    <?= \App\Core\Helpers::csrfField() ?> 
     <div class="col-md-6">
       <label class="form-label">Agence de départ</label>
       <select name="agence_depart_id" class="form-select" required>

@@ -57,13 +57,8 @@ class Helpers
     }
 
     /** --- ALIAS pour coller à la vue et aux contrôleurs que je t’ai donnés --- */
-
-    /** flashSet(alias) = même chose que flash() mais ordre (type, msg) harmonisé */
     public static function flashSet(string $msgOrType, ?string $msg = null): void
     {
-        // Autorise les deux signatures:
-        // - flashSet('success', 'Message')
-        // - flashSet('Message')  -> default type = success
         if ($msg === null) {
             $type = 'success';
             $msg  = $msgOrType;
@@ -73,10 +68,38 @@ class Helpers
         self::flash($msg, $type);
     }
 
-    /** flashGet(alias) = même chose que popFlash() */
     public static function flashGet(): ?array
     {
         return self::popFlash();
+    }
+
+    /* -------------------------------
+       CSRF protection
+       ------------------------------- */
+
+    /** Génère ou retourne le token CSRF courant */
+    public static function csrfToken(): string
+    {
+        self::startSession();
+        if (empty($_SESSION['_csrf'])) {
+            $_SESSION['_csrf'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['_csrf'];
+    }
+
+    /** Retourne le champ <input hidden> à mettre dans les formulaires */
+    public static function csrfField(): string
+    {
+        $t = self::csrfToken();
+        return '<input type="hidden" name="_csrf" value="'.htmlspecialchars($t).'">';
+    }
+
+    /** Vérifie que le token POST correspond à celui en session */
+    public static function csrfVerify(): bool
+    {
+        self::startSession();
+        $ok = isset($_POST['_csrf'], $_SESSION['_csrf']) && hash_equals($_SESSION['_csrf'], $_POST['_csrf']);
+        return $ok;
     }
 
     /** Base path pour les URLs relatives (ex: /login) */
@@ -85,3 +108,4 @@ class Helpers
         return rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
     }
 }
+

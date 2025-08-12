@@ -53,9 +53,10 @@
               <a class="btn btn-sm btn-outline-warning" href="<?= $base ?>/trajet/edit/<?= $id ?>" title="Modifier">
                 <i class="bi bi-pencil-square"></i>
               </a>
-
+              <?= \App\Core\Helpers::csrfField() ?>
               <form method="post" action="<?= $base ?>/trajet/delete/<?= $id ?>" style="display:inline;"
                     onsubmit="return confirm('Supprimer ce trajet ?');">
+
                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
                   <i class="bi bi-trash"></i>
                 </button>
