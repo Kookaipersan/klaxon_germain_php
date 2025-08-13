@@ -143,6 +143,8 @@ class TrajetController
     /** GET /trajet/edit/{id} : Formulaire d’édition */
     public function editForm($id)
     {
+         die('EDIT FORM OK');
+
         if (!Helpers::isLoggedIn()) {
             Helpers::flash('Connexion requise', 'warning');
             header('Location: ' . Helpers::basePath() . '/login'); exit;
@@ -214,7 +216,12 @@ class TrajetController
         ]);
 
         Helpers::flash('Le trajet a été modifié', 'success');
-        header('Location: ' . Helpers::basePath() . '/'); exit;
+        if (Helpers::isAdmin()) {
+    header('Location: ' . Helpers::basePath() . '/dashboard/trajets');
+} else {
+    header('Location: ' . Helpers::basePath() . '/');
+}
+exit;
     }
 
     /* ---------------------------------------------------------
@@ -251,6 +258,11 @@ class TrajetController
         Trajet::delete($id);
 
         Helpers::flash('Le trajet a été supprimé', 'success');
-        header('Location: ' . Helpers::basePath() . '/'); exit;
+        if (Helpers::isAdmin()) {
+    header('Location: ' . Helpers::basePath() . '/dashboard/trajets');
+} else {
+    header('Location: ' . Helpers::basePath() . '/');
+}
+exit;
     }
 }

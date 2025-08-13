@@ -33,6 +33,8 @@
             $id      = (int)$t['id'];
             $modalId = 'trajetModal'.$id;
             $base    = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+            $isOwner = !empty($_SESSION['user']['id']) && ((int)$_SESSION['user']['id'] === (int)$t['id_utilisateur']);
+            $isAdmin = !empty($_SESSION['user']['est_admin']);
           ?>
           <tr>
             <td><?= htmlspecialchars($t['ville_depart']) ?></td>
@@ -43,24 +45,32 @@
             <td><?= date('H:i',     strtotime($t['date_arrivee'])) ?></td>
             <td><?= (int)$t['places_disponibles'] ?></td>
             <td class="text-nowrap">
-              <!-- Œil = détails -->
+
+              <!-- Bouton voir -->
               <button type="button" class="btn btn-sm btn-outline-secondary"
                       data-bs-toggle="modal" data-bs-target="#<?= $modalId ?>" title="Voir">
                 <i class="bi bi-eye"></i>
               </button>
 
-              <!-- Edit / Delete (activés seulement si auteur/admin : logique déjà côté contrôleur) -->
-              <a class="btn btn-sm btn-outline-warning" href="<?= $base ?>/trajet/edit/<?= $id ?>" title="Modifier">
-                <i class="bi bi-pencil-square"></i>
-              </a>
-              <?= \App\Core\Helpers::csrfField() ?>
-              <form method="post" action="<?= $base ?>/trajet/delete/<?= $id ?>" style="display:inline;"
-                    onsubmit="return confirm('Supprimer ce trajet ?');">
+              <!-- Boutons Modifier / Supprimer : visible si auteur ou admin -->
+             <?php
+  $uid = $_SESSION['user']['id'] ?? null;
+  $isOwner = $uid && $uid == $t['id_utilisateur'];
+  $isAdmin = !empty($_SESSION['user']['est_admin']);
+?>
+<?php if ($isOwner || $isAdmin): ?>
+  <a class="btn btn-sm btn-outline-warning" href="<?= $base ?>/trajet/edit/<?= $id ?>" title="Modifier">
+    <i class="bi bi-pencil-square"></i>
+  </a>
 
-                <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </form>
+  <form method="post" action="<?= $base ?>/trajet/delete/<?= $id ?>" style="display:inline;" onsubmit="return confirm('Supprimer ce trajet ?');">
+    <?= \App\Core\Helpers::csrfField() ?>
+    <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+      <i class="bi bi-trash"></i>
+    </button>
+  </form>
+<?php endif; ?>
+
             </td>
           </tr>
 

@@ -79,11 +79,23 @@ $router->get('/logout', 'LoginController@logout');
 // --- Trajets ---
 $router->get('/trajet/create',        'TrajetController@createForm');
 $router->post('/trajet/create',       'TrajetController@createAction');
-
 $router->get('/trajet/edit/{id}',     'TrajetController@editForm');
 $router->post('/trajet/edit/{id}',    'TrajetController@editAction');
-
 $router->post('/trajet/delete/{id}',  'TrajetController@deleteAction');
+// --- Dashboard Admin ---
+$router->get('/dashboard/users',   'DashboardController@users');
+$router->get('/dashboard/agences', 'DashboardController@agences');
+$router->get('/dashboard/trajets', 'DashboardController@trajets');
+
+$router->get('/agence/create',         'AgenceController@createForm');
+$router->post('/agence/create',        'AgenceController@createAction');
+$router->get('/agence/edit/{id}',      'AgenceController@editForm');
+$router->post('/agence/edit/{id}',     'AgenceController@editAction');
+$router->post('/agence/delete/{id}',   'AgenceController@deleteAction');
+
+$router->post('/dashboard/trajets/delete/{id}', 'DashboardController@deleteTrajet');
+
+
 
 // 3) Lancer le routeur
 $router->run();
