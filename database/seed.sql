@@ -59,7 +59,7 @@ INSERT INTO `utilisateurs` (`id`, `prenom`, `nom`, `email`, `mot_de_passe`, `tel
 (4, 'Camille', 'Moreau', 'camille.moreau@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0611223344', 'utilisateur'),
 (5, 'lucie', 'lefèvre', 'lucie.lefevre@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0777889900', 'utilisateur'),
 (6, 'Thomas', 'Leroy', 'thomas.leroy@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0655443322', 'utilisateur'),
-(7, 'Chloé', 'Roux', 'clhoé.roux@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0633221199', 'utilisateur'),
+(7, 'Chloé', 'Roux', 'clhoe.roux@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0633221199', 'utilisateur'),
 (8, 'Maxime', 'Petit', 'maxime.petit@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0766778899', 'utilisateur'),
 (9, 'Laura', 'Garnier', 'laura.garnier@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0688776655', 'utilisateur'),
 (10, 'Antoine', 'Dupuis', 'antoine.dupuis@email.fr', '$2y$12$lOGbMD0XqTqVnBkX0hFm0eT2FoaDFJZN3y8f5khl5GF/6lyavnmUq', '0744556677', 'utilisateur'),
