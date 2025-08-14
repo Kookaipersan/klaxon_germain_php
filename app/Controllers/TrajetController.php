@@ -1,6 +1,7 @@
 <?php
 namespace App\Controllers;
 
+
 use App\Core\Helpers;
 use App\Core\Database;
 use App\Models\Trajet;
@@ -8,15 +9,31 @@ use PDO;
 
 class TrajetController
 {
-    /* ---------------------------------------------------------
-     | Helpers privés
-     |----------------------------------------------------------
-     */
+ public function editForm($id)
+{
+    if (!Helpers::isLoggedIn()) {
+        Helpers::flash('Connexion requise', 'warning');
+        header('Location: ' . Helpers::basePath() . '/login'); exit;
+    }
 
-    /**
-     * Normalise un datetime-local HTML5 (YYYY-MM-DDTHH:MM)
-     * en datetime MySQL (YYYY-MM-DD HH:MM:SS).
-     */
+    $trajet = Trajet::findById($id);
+    if (!$trajet) {
+        Helpers::flash('Trajet introuvable', 'danger');
+        header('Location: ' . Helpers::basePath() . '/'); exit;
+    }
+
+    $uid = Helpers::user()['id'] ?? 0;
+    if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
+        Helpers::flash('Accès refusé', 'danger');
+        header('Location: ' . Helpers::basePath() . '/'); exit;
+    }
+
+    $agences = $this->fetchAgences();
+    require __DIR__ . '/../Views/trajets/edit.php';
+}
+
+
+
     private function normDt(string $s): string
     {
         $s = trim($s);
@@ -133,30 +150,10 @@ class TrajetController
 
         Helpers::flash('Le trajet a été créé', 'success');
         header('Location: ' . Helpers::basePath() . '/'); exit;
-    }
+    
 
-    /* ---------------------------------------------------------
-     | EDIT
-     |----------------------------------------------------------
-     */
-
-    /** GET /trajet/edit/{id} : Formulaire d’édition */
-    public function editForm($id)
-    {
-         die('EDIT FORM OK');
-
-        if (!Helpers::isLoggedIn()) {
-            Helpers::flash('Connexion requise', 'warning');
-            header('Location: ' . Helpers::basePath() . '/login'); exit;
-        }
-
-        $id = (int)$id;
-        $trajet = Trajet::findById($id);
-        if (!$trajet) {
-            Helpers::flash('Trajet introuvable', 'danger');
-            header('Location: ' . Helpers::basePath() . '/'); exit;
-        }
-
+    
+   
         // Autorisation : auteur ou admin
         $uid = (int)(Helpers::user()['id'] ?? 0);
         if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
@@ -165,7 +162,9 @@ class TrajetController
         }
 
         $agences = $this->fetchAgences();
-        require __DIR__ . '/../Views/trajets/edit.php';
+       require __DIR__ . '/../Views/trajets/edit.php';
+
+
     }
 
     /** POST /trajet/edit/{id} : Traitement de l’édition */
