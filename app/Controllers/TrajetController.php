@@ -1,7 +1,6 @@
 <?php
 namespace App\Controllers;
 
-
 use App\Core\Helpers;
 use App\Core\Database;
 use App\Models\Trajet;
@@ -9,48 +8,43 @@ use PDO;
 
 class TrajetController
 {
- public function editForm($id)
-{
-    if (!Helpers::isLoggedIn()) {
-        Helpers::flash('Connexion requise', 'warning');
-        header('Location: ' . Helpers::basePath() . '/login'); exit;
+    public function editForm($id)
+    {
+        if (!Helpers::isLoggedIn()) {
+            Helpers::flash('Connexion requise', 'warning');
+            header('Location: ' . Helpers::basePath() . '/login');
+            exit;
+        }
+
+        $trajet = Trajet::findById($id);
+        if (!$trajet) {
+            Helpers::flash('Trajet introuvable', 'danger');
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
+        }
+
+        $uid = Helpers::user()['id'] ?? 0;
+        if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
+            Helpers::flash('Accès refusé', 'danger');
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
+        }
+
+        $agences = $this->fetchAgences();
+        require __DIR__ . '/../Views/trajets/edit.php';
     }
-
-    $trajet = Trajet::findById($id);
-    if (!$trajet) {
-        Helpers::flash('Trajet introuvable', 'danger');
-        header('Location: ' . Helpers::basePath() . '/'); exit;
-    }
-
-    $uid = Helpers::user()['id'] ?? 0;
-    if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
-        Helpers::flash('Accès refusé', 'danger');
-        header('Location: ' . Helpers::basePath() . '/'); exit;
-    }
-
-    $agences = $this->fetchAgences();
-    require __DIR__ . '/../Views/trajets/edit.php';
-}
-
-
 
     private function normDt(string $s): string
     {
         $s = trim($s);
         if ($s === '') return $s;
-        // 2025-08-10T14:30 -> 2025-08-10 14:30
         $s = str_replace('T', ' ', $s);
-        // ajoute :00 si pas de secondes
         if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $s)) {
             $s .= ':00';
         }
         return $s;
     }
 
-    /**
-     * Valide la cohérence métier d’un trajet.
-     * Retourne un tableau d’erreurs (vide si OK).
-     */
     private function validate(int $ad, int $aa, string $dd, string $da, int $pt, int $pd): array
     {
         $errors = [];
@@ -83,45 +77,38 @@ class TrajetController
         return $errors;
     }
 
-    /**
-     * Récupère la liste des agences (id, nom) pour alimenter les <select>.
-     */
     private function fetchAgences(): array
     {
         $pdo = Database::getInstance();
         return $pdo->query("SELECT id, nom FROM agences ORDER BY nom")->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /* ---------------------------------------------------------
-     | CREATE
-     |----------------------------------------------------------
-     */
-
-    /** GET /trajet/create : Formulaire de création */
     public function createForm()
     {
         if (!Helpers::isLoggedIn()) {
             Helpers::flash('Connexion requise', 'warning');
-            header('Location: ' . Helpers::basePath() . '/login'); exit;
+            header('Location: ' . Helpers::basePath() . '/login');
+            exit;
         }
 
         $agences = $this->fetchAgences();
         require __DIR__ . '/../Views/trajets/create.php';
     }
 
-    /** POST /trajet/create : Traitement de la création */
     public function createAction()
     {
         if (!Helpers::isLoggedIn()) {
             Helpers::flash('Connexion requise', 'warning');
-            header('Location: ' . Helpers::basePath() . '/login'); exit;
+            header('Location: ' . Helpers::basePath() . '/login');
+            exit;
         }
-         if (!\App\Core\Helpers::csrfVerify()) {
-        \App\Core\Helpers::flash('Session expirée. Merci de réessayer.', 'danger');
-        header('Location: ' . \App\Core\Helpers::basePath() . '/'); exit;
-    }
 
-        // Inputs + normalisation
+        if (!Helpers::csrfVerify()) {
+            Helpers::flash('Session expirée. Merci de réessayer.', 'danger');
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
+        }
+
         $ad  = (int)($_POST['agence_depart_id']  ?? 0);
         $aa  = (int)($_POST['agence_arrivee_id'] ?? 0);
         $dd  = $this->normDt((string)($_POST['date_heure_depart']  ?? ''));
@@ -130,14 +117,13 @@ class TrajetController
         $pd  = (int)($_POST['nombres_places_dispo'] ?? 0);
         $uid = (int)(Helpers::user()['id'] ?? 0);
 
-        // Validation
         $errors = $this->validate($ad, $aa, $dd, $da, $pt, $pd);
         if ($errors) {
             Helpers::flash(implode(' ', $errors), 'danger');
-            header('Location: ' . Helpers::basePath() . '/trajet/create'); exit;
+            header('Location: ' . Helpers::basePath() . '/trajet/create');
+            exit;
         }
 
-        // Insertion
         Trajet::create([
             'agence_depart_id'      => $ad,
             'agence_arrivee_id'     => $aa,
@@ -149,47 +135,33 @@ class TrajetController
         ]);
 
         Helpers::flash('Le trajet a été créé', 'success');
-        header('Location: ' . Helpers::basePath() . '/'); exit;
-    
-
-    
-   
-        // Autorisation : auteur ou admin
-        $uid = (int)(Helpers::user()['id'] ?? 0);
-        if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
-            Helpers::flash('Accès refusé', 'danger');
-            header('Location: ' . Helpers::basePath() . '/'); exit;
-        }
-
-        $agences = $this->fetchAgences();
-       require __DIR__ . '/../Views/trajets/edit.php';
-
-
+        header('Location: ' . Helpers::basePath() . '/');
+        exit;
     }
 
-    /** POST /trajet/edit/{id} : Traitement de l’édition */
     public function editAction($id)
     {
         if (!Helpers::isLoggedIn()) {
             Helpers::flash('Connexion requise', 'warning');
-            header('Location: ' . Helpers::basePath() . '/login'); exit;
+            header('Location: ' . Helpers::basePath() . '/login');
+            exit;
         }
 
         $id = (int)$id;
         $trajet = Trajet::findById($id);
         if (!$trajet) {
             Helpers::flash('Trajet introuvable', 'danger');
-            header('Location: ' . Helpers::basePath() . '/'); exit;
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
         }
 
-        // Autorisation : auteur ou admin
         $uid = (int)(Helpers::user()['id'] ?? 0);
         if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
             Helpers::flash('Accès refusé', 'danger');
-            header('Location: ' . Helpers::basePath() . '/'); exit;
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
         }
 
-        // Inputs + normalisation
         $ad  = (int)($_POST['agence_depart_id']  ?? 0);
         $aa  = (int)($_POST['agence_arrivee_id'] ?? 0);
         $dd  = $this->normDt((string)($_POST['date_heure_depart']  ?? ''));
@@ -197,14 +169,13 @@ class TrajetController
         $pt  = (int)($_POST['nombres_places_total'] ?? 0);
         $pd  = (int)($_POST['nombres_places_dispo'] ?? 0);
 
-        // Validation
         $errors = $this->validate($ad, $aa, $dd, $da, $pt, $pd);
         if ($errors) {
             Helpers::flash(implode(' ', $errors), 'danger');
-            header('Location: ' . Helpers::basePath() . "/trajet/edit/$id"); exit;
+            header('Location: ' . Helpers::basePath() . "/trajet/edit/$id");
+            exit;
         }
 
-        // Mise à jour
         Trajet::update($id, [
             'agence_depart_id'      => $ad,
             'agence_arrivee_id'     => $aa,
@@ -216,52 +187,50 @@ class TrajetController
 
         Helpers::flash('Le trajet a été modifié', 'success');
         if (Helpers::isAdmin()) {
-    header('Location: ' . Helpers::basePath() . '/dashboard/trajets');
-} else {
-    header('Location: ' . Helpers::basePath() . '/');
-}
-exit;
+            header('Location: ' . Helpers::basePath() . '/dashboard/trajets');
+        } else {
+            header('Location: ' . Helpers::basePath() . '/');
+        }
+        exit;
     }
 
-    /* ---------------------------------------------------------
-     | DELETE
-     |----------------------------------------------------------
-     */
-
-    /** POST /trajet/delete/{id} : Suppression */
     public function deleteAction($id)
     {
         if (!Helpers::isLoggedIn()) {
             Helpers::flash('Connexion requise', 'warning');
-            header('Location: ' . Helpers::basePath() . '/login'); exit;
+            header('Location: ' . Helpers::basePath() . '/login');
+            exit;
         }
-        if (!\App\Core\Helpers::csrfVerify()) {
-        \App\Core\Helpers::flash('Session expirée. Merci de réessayer.', 'danger');
-        header('Location: ' . \App\Core\Helpers::basePath() . '/'); exit;
-    }
+
+        if (!Helpers::csrfVerify()) {
+            Helpers::flash('Session expirée. Merci de réessayer.', 'danger');
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
+        }
 
         $id = (int)$id;
         $trajet = Trajet::findById($id);
         if (!$trajet) {
             Helpers::flash('Trajet introuvable', 'danger');
-            header('Location: ' . Helpers::basePath() . '/'); exit;
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
         }
 
-        // Autorisation : auteur ou admin
         $uid = (int)(Helpers::user()['id'] ?? 0);
         if ($uid !== (int)$trajet['id_utilisateur'] && !Helpers::isAdmin()) {
             Helpers::flash('Accès refusé', 'danger');
-            header('Location: ' . Helpers::basePath() . '/'); exit;
+            header('Location: ' . Helpers::basePath() . '/');
+            exit;
         }
 
         Trajet::delete($id);
 
         Helpers::flash('Le trajet a été supprimé', 'success');
         if (Helpers::isAdmin()) {
-    header('Location: ' . Helpers::basePath() . '/dashboard/trajets');
-} else {
-    header('Location: ' . Helpers::basePath() . '/');
-}
-exit;
+            header('Location: ' . Helpers::basePath() . '/dashboard/trajets');
+        } else {
+            header('Location: ' . Helpers::basePath() . '/');
+        }
+        exit;
     }
 }

@@ -1,5 +1,9 @@
 <?php
+/** @var array $agences */
+
 use App\Core\Helpers;
+
+$agences ??= [];
 $base = Helpers::basePath();
 include __DIR__ . '/../layout/header.php';
 ?>

@@ -1,5 +1,10 @@
-<?php include __DIR__.'/../layout/header.php'; $base = \App\Core\Helpers::basePath();
- ?>
+<?php
+/** @var array $trajets */
+$trajets ??= [];
+
+include __DIR__.'/../layout/header.php';
+$base = \App\Core\Helpers::basePath();
+?>
 <div class="container">
   <h2 class="mb-3">Trajets</h2>
 

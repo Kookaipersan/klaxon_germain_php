@@ -1,4 +1,9 @@
-<?php include __DIR__.'/../layout/header.php'; ?>
+<?php
+/** @var array $users */
+$users ??= [];
+
+include __DIR__.'/../layout/header.php';
+?>
 <div class="container">
   <h2 class="mb-4">Utilisateurs</h2>
   <div class="table-responsive">
@@ -22,3 +27,4 @@
   </div>
 </div>
 <?php include __DIR__.'/../layout/footer.php'; ?>
+
