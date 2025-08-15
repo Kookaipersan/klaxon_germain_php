@@ -1,0 +1,29 @@
+{
+  "name": "klaxon_germain_php",
+  "version": "1.0.0",
+  "description": "Ce projet est une application de covoiturage interne à l'entreprise, réalisée en PHP avec architecture MVC.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass": "sass assets/sass/custom.scss public/css/custom.css --no-source-map"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kookaipersan/klaxon_germain_php.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Kookaipersan/klaxon_germain_php/issues"
+  },
+  "homepage": "https://github.com/Kookaipersan/klaxon_germain_php#readme",
+  "dependencies": {
+    "bootstrap": "^5.3.7",
+    "sass": "^1.90.0"
+  }
+}

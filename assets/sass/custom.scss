@@ -1,0 +1,9 @@
+@use "../../node_modules/bootstrap/scss/bootstrap" with (
+  $primary:     #0074c7,
+  $secondary:   #384050,
+  $success:     #82b864,
+  $danger:      #cd2c2e,
+  $info:        #f1f8fc,
+  $dark:        #00497c,
+  $light:       #f1f8fc
+);
