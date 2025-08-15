@@ -20,3 +20,18 @@ Commande pour tout installer :
 mysql -u root -p touche_pas_au_klaxon < database/schema.sql
 mysql -u root -p touche_pas_au_klaxon < database/seed.sql
 ```
+## 📚 Documentation technique PHP
+
+La documentation technique du projet, générée avec [phpDocumentor](https://www.phpdoc.org/), est disponible dans le dossier suivant :docs/phpdoc/index.html
+
+
+### 🔧 Pour consulter la documentation :
+
+1. **Méthode rapide :** ouvrir le fichier localement :
+   - Naviguez dans l’arborescence : `docs/phpdoc/index.html`
+   - Clic droit > Ouvrir avec un navigateur (Chrome, Firefox...)
+
+2. **Méthode serveur :** lancer un serveur statique dans le dossier :
+   ```bash
+   cd docs/phpdoc
+   php -S localhost:8081
