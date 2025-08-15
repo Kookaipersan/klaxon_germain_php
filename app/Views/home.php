@@ -1,8 +1,23 @@
-<?php include __DIR__ . '/layout/header.php'; ?>
+<?php
+/**
+ * Page d'accueil - Liste des trajets disponibles
+ *
+ * Ce fichier affiche :
+ * - les messages flash,
+ * - la liste des trajets proposés dans un tableau,
+ * - des boutons d'action (voir, modifier, supprimer),
+ * - une modale avec les détails du trajet.
+ *
+ * Visible par tous (même utilisateurs non connectés).
+ */
+
+include __DIR__ . '/layout/header.php';
+?>
 
 <div class="container">
 
   <?php if ($f = \App\Core\Helpers::flashGet()): ?>
+    <!-- Message flash (succès, erreur, etc.) -->
     <div class="alert alert-<?= htmlspecialchars($f['type']) ?> text-center">
       <?= htmlspecialchars($f['msg']) ?>
     </div>
@@ -11,8 +26,10 @@
   <h2 class="mb-4">Trajets proposés</h2>
 
   <?php if (empty($trajets)): ?>
+    <!-- Message si aucun trajet disponible -->
     <div class="alert alert-warning text-center">Aucun trajet disponible pour le moment.</div>
   <?php else: ?>
+    <!-- Tableau des trajets -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-dark">
@@ -33,7 +50,8 @@
             $id      = (int)$t['id'];
             $modalId = 'trajetModal'.$id;
             $base    = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
-            $isOwner = !empty($_SESSION['user']['id']) && ((int)$_SESSION['user']['id'] === (int)$t['id_utilisateur']);
+            $uid     = $_SESSION['user']['id'] ?? null;
+            $isOwner = $uid && $uid == $t['id_utilisateur'];
             $isAdmin = !empty($_SESSION['user']['est_admin']);
           ?>
           <tr>
@@ -45,36 +63,29 @@
             <td><?= date('H:i',     strtotime($t['date_arrivee'])) ?></td>
             <td><?= (int)$t['places_disponibles'] ?></td>
             <td class="text-nowrap">
-
-              <!-- Bouton voir -->
+              <!-- Bouton "Voir" (ouvre la modale) -->
               <button type="button" class="btn btn-sm btn-outline-secondary"
                       data-bs-toggle="modal" data-bs-target="#<?= $modalId ?>" title="Voir">
                 <i class="bi bi-eye"></i>
               </button>
 
-              <!-- Boutons Modifier / Supprimer : visible si auteur ou admin -->
-             <?php
-  $uid = $_SESSION['user']['id'] ?? null;
-  $isOwner = $uid && $uid == $t['id_utilisateur'];
-  $isAdmin = !empty($_SESSION['user']['est_admin']);
-?>
-<?php if ($isOwner || $isAdmin): ?>
-  <a class="btn btn-sm btn-outline-warning" href="<?= $base ?>/trajet/edit/<?= $id ?>" title="Modifier">
-    <i class="bi bi-pencil-square"></i>
-  </a>
+              <!-- Boutons "Modifier" / "Supprimer" si auteur ou admin -->
+              <?php if ($isOwner || $isAdmin): ?>
+                <a class="btn btn-sm btn-outline-warning" href="<?= $base ?>/trajet/edit/<?= $id ?>" title="Modifier">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
 
-  <form method="post" action="<?= $base ?>/trajet/delete/<?= $id ?>" style="display:inline;" onsubmit="return confirm('Supprimer ce trajet ?');">
-    <?= \App\Core\Helpers::csrfField() ?>
-    <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
-      <i class="bi bi-trash"></i>
-    </button>
-  </form>
-<?php endif; ?>
-
+                <form method="post" action="<?= $base ?>/trajet/delete/<?= $id ?>" style="display:inline;" onsubmit="return confirm('Supprimer ce trajet ?');">
+                  <?= \App\Core\Helpers::csrfField() ?>
+                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              <?php endif; ?>
             </td>
           </tr>
 
-          <!-- Modale détails -->
+          <!-- Modale détails du trajet -->
           <div class="modal fade" id="<?= $modalId ?>" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">

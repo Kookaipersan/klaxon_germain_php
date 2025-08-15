@@ -4,8 +4,20 @@ namespace App\Models;
 use App\Core\Database;
 use PDO;
 
+/**
+ * Modèle Trajet
+ *
+ * Gère les opérations CRUD et les requêtes personnalisées pour les trajets.
+ * Utilisé pour récupérer les trajets disponibles, les trajets par ID,
+ * ainsi que pour créer, modifier et supprimer un trajet.
+ */
 class Trajet
 {
+    /**
+     * Récupère tous les trajets disponibles à venir (date future et places dispo > 0).
+     *
+     * @return array Liste des trajets disponibles (tableau associatif)
+     */
     public static function getTrajetsDisponibles(): array
     {
         $pdo = Database::getInstance();
@@ -37,6 +49,12 @@ class Trajet
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
+    /**
+     * Recherche un trajet par son ID, avec les infos de l’auteur et des agences.
+     *
+     * @param int $id ID du trajet à récupérer
+     * @return array|null Données du trajet ou null si introuvable
+     */
     public static function findById(int $id): ?array
     {
         $pdo = Database::getInstance();
@@ -62,6 +80,15 @@ class Trajet
         return $row ?: null;
     }
 
+    /**
+     * Insère un nouveau trajet en base de données.
+     *
+     * @param array $data Données du trajet à insérer
+     *                    (attend les clés : agence_depart_id, agence_arrivee_id,
+     *                     date_heure_depart, date_heure_arrivee, nombres_places_total,
+     *                     nombres_places_dispo, utilisateur_id)
+     * @return int ID du trajet inséré
+     */
     public static function create(array $data): int
     {
         $pdo = Database::getInstance();
@@ -82,6 +109,13 @@ class Trajet
         return (int)$pdo->lastInsertId();
     }
 
+    /**
+     * Met à jour un trajet existant.
+     *
+     * @param int $id ID du trajet à modifier
+     * @param array $data Données à mettre à jour (mêmes clés que pour create)
+     * @return bool Succès ou échec de la requête
+     */
     public static function update(int $id, array $data): bool
     {
         $pdo = Database::getInstance();
@@ -102,6 +136,12 @@ class Trajet
         ]);
     }
 
+    /**
+     * Supprime un trajet par son ID.
+     *
+     * @param int $id ID du trajet à supprimer
+     * @return bool Succès ou échec de la suppression
+     */
     public static function delete(int $id): bool
     {
         $pdo = Database::getInstance();

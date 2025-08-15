@@ -6,8 +6,17 @@ use App\Core\Database;
 use App\Models\Trajet;
 use PDO;
 
+/**
+ * Contrôleur pour la gestion des trajets.
+ */
 class TrajetController
 {
+    /**
+     * Affiche le formulaire d'édition d'un trajet.
+     *
+     * @param int $id ID du trajet à modifier.
+     * @return void
+     */
     public function editForm($id)
     {
         if (!Helpers::isLoggedIn()) {
@@ -34,6 +43,12 @@ class TrajetController
         require __DIR__ . '/../Views/trajets/edit.php';
     }
 
+    /**
+     * Normalise une date/heure en format SQL.
+     *
+     * @param string $s Chaîne de date.
+     * @return string Date normalisée.
+     */
     private function normDt(string $s): string
     {
         $s = trim($s);
@@ -45,6 +60,17 @@ class TrajetController
         return $s;
     }
 
+    /**
+     * Valide les données d'un trajet.
+     *
+     * @param int    $ad ID agence départ.
+     * @param int    $aa ID agence arrivée.
+     * @param string $dd Date/heure départ.
+     * @param string $da Date/heure arrivée.
+     * @param int    $pt Places totales.
+     * @param int    $pd Places disponibles.
+     * @return array Liste des erreurs.
+     */
     private function validate(int $ad, int $aa, string $dd, string $da, int $pt, int $pd): array
     {
         $errors = [];
@@ -77,12 +103,22 @@ class TrajetController
         return $errors;
     }
 
+    /**
+     * Récupère la liste des agences.
+     *
+     * @return array Liste des agences (id, nom).
+     */
     private function fetchAgences(): array
     {
         $pdo = Database::getInstance();
         return $pdo->query("SELECT id, nom FROM agences ORDER BY nom")->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Affiche le formulaire de création de trajet.
+     *
+     * @return void
+     */
     public function createForm()
     {
         if (!Helpers::isLoggedIn()) {
@@ -95,6 +131,11 @@ class TrajetController
         require __DIR__ . '/../Views/trajets/create.php';
     }
 
+    /**
+     * Traite la création d’un trajet.
+     *
+     * @return void
+     */
     public function createAction()
     {
         if (!Helpers::isLoggedIn()) {
@@ -139,6 +180,12 @@ class TrajetController
         exit;
     }
 
+    /**
+     * Traite la modification d’un trajet.
+     *
+     * @param int $id ID du trajet.
+     * @return void
+     */
     public function editAction($id)
     {
         if (!Helpers::isLoggedIn()) {
@@ -194,6 +241,12 @@ class TrajetController
         exit;
     }
 
+    /**
+     * Supprime un trajet.
+     *
+     * @param int $id ID du trajet à supprimer.
+     * @return void
+     */
     public function deleteAction($id)
     {
         if (!Helpers::isLoggedIn()) {
