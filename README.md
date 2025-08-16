@@ -1,37 +1,81 @@
-# Covoiturage d'entreprise – Projet MVC en PHP
+# 🚗 Projet de Covoiturage d'Entreprise - Klaxon PHP
 
-Ce projet est une application de covoiturage interne à l'entreprise, réalisée en PHP avec architecture MVC.
+Application web de covoiturage développée en PHP (MVC personnalisé) dans le cadre de ma formation Développeur Web & Web Mobile.
 
-## Fonctions
+## 🔧 Technologies utilisées
 
-- Liste des trajets à venir avec places dispo
-- Connexion utilisateur
-- Proposer, modifier, supprimer un trajet
-- Interface admin (agences, utilisateurs, trajets)
+- PHP 8.4
+- MySQL / phpMyAdmin
+- Bootstrap 5 (personnalisé avec Sass)
+- Composer
+- PHPStan (niveau 5)
+- PHPUnit
+- phpDocumentor
+- Routeur Buki
 
-## Base de données
+## 🎯 Fonctionnalités principales
 
-- Fichier `database/schema.sql` : création des tables
-- Fichier `database/seed.sql` : insertion des données de test
+- ✅ Authentification (connexion, déconnexion)
+- ✅ Gestion des trajets (création, modification, suppression)
+- ✅ Dashboard administrateur :
+  - Gestion des utilisateurs
+  - Gestion des agences
+  - Suppression de trajets
+- ✅ Création de documentation automatique
+- ✅ Interface responsive
 
-Commande pour tout installer :
+## 🗂️ Structure MVC
 
-```bash
-mysql -u root -p touche_pas_au_klaxon < database/schema.sql
-mysql -u root -p touche_pas_au_klaxon < database/seed.sql
+```text
+📁 app/
+ ├── Controllers/
+ ├── Models/
+ ├── Views/
+ └── Core/ (Database, Router, Helpers, etc.)
+
+
+## 🧪 Tests & qualité de code
+
+Analyse statique : PHPStan (niveau 5)
+
+Tests unitaires : PHPUnit
+
+Documentation : phpDocumentor
+
+## 📚 Documentation technique
+
+Dossier : docs/phpdoc/index.html
+
+Générée avec phpDocumentor
+
+Commande de génération :
+
+php phpdoc.phar run -d app,index.php -t docs/phpdoc
+
+## 🔒 Sécurité
+
+Protection CSRF sur tous les formulaires
+
+Échappement des sorties HTML avec htmlspecialchars()
+
+Restrictions par rôle (admin vs utilisateur)
+
+## 🛠️ Installation
+
+Cloner le dépôt
+
+Configurer la base de données (.env ou app/Core/Database.php)
+
+Lancer un serveur local :
+
+php -S localhost:8000 -t public/
+
+
+Accéder à l'application sur http://localhost:8000
+
+👤 Auteur
+
+William Germain
+Formation Webmaster Full Stack - 2025
+GitHub : @WilliamGermain
 ```
-## 📚 Documentation technique PHP
-
-La documentation technique du projet, générée avec [phpDocumentor](https://www.phpdoc.org/), est disponible dans le dossier suivant :docs/phpdoc/index.html
-
-
-### 🔧 Pour consulter la documentation :
-
-1. **Méthode rapide :** ouvrir le fichier localement :
-   - Naviguez dans l’arborescence : `docs/phpdoc/index.html`
-   - Clic droit > Ouvrir avec un navigateur (Chrome, Firefox...)
-
-2. **Méthode serveur :** lancer un serveur statique dans le dossier :
-   ```bash
-   cd docs/phpdoc
-   php -S localhost:8081
